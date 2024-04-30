@@ -5,7 +5,9 @@ import sys
 import tempfile
 import time
 import traceback
-
+from model.Configuration import Configuration
+from algorithm.Cso import Cso
+from HtmlOutput import HtmlOutput
 from model.Configuration import Configuration
 # from algorithm.GeneticAlgorithm import GeneticAlgorithm
 # from algorithm.APNsgaIII import APNsgaIII
@@ -38,6 +40,26 @@ def main(file_name):
     print("\nCompleted in {} secs.\n".format(seconds))
     os.startfile(temp_file_path)
 
+def run_schedule(file_name="/GaSchedule.json"):
+    start_time = int(round(time.time() * 1000))
+
+    configuration = Configuration()
+    target_file = str(pathlib.Path().absolute()) + file_name
+    configuration.parseFile(target_file)
+
+    alg = Cso(configuration)
+    print("GaSchedule Version 1.2.5 . Making a Class Schedule Using", alg, ".\n")
+    alg.run()
+    html_result = HtmlOutput.getResult(alg.result)
+
+    temp_file_path = tempfile.gettempdir() + file_name.replace(".json", ".htm")
+    with codecs.open(temp_file_path, "w", "utf-8") as writer:
+        writer.write(html_result)
+
+    seconds = (int(round(time.time() * 1000)) - start_time) / 1000.0
+    print("\nCompleted in {} secs.\n".format(seconds))
+    os.startfile(temp_file_path)
+    return temp_file_path 
 
 if __name__ == "__main__":
     file_name = "/GaSchedule.json"
