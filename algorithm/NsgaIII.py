@@ -7,7 +7,7 @@ from time import time
 
 # Deb K , Jain H . An Evolutionary Many-Objective Optimization Algorithm Using Reference Point-Based Nondominated Sorting Approach,
 # Part I: Solving Problems With Box Constraints[J]. IEEE Transactions on Evolutionary Computation, 2014, 18(4):577-601.
-# Copyright (c) 2023 Miller Cy Chan
+# Copyright (c) 2023 - 2024 Miller Cy Chan
 
 
 # NSGA III
@@ -328,6 +328,7 @@ class NsgaIII:
 
         return next
 
+
     def crossing(self, population):
         populationSize = self._populationSize
         crossoverProbability, numberOfCrossoverPoints = self._crossoverProbability, self._numberOfCrossoverPoints
@@ -349,9 +350,12 @@ class NsgaIII:
 
     # initialize new population with chromosomes randomly built using prototype
     def initialize(self):
-        range1 = range(self._populationSize)
-        return [i for i in map(self.makeNew, range1)]
+        result = [i for i in map(self.makeNew, range(self._populationSize))]
+        return result
 
+
+    def mutation(self, chromosome):
+        return chromosome.mutation(self._mutationSize, self._mutationProbability)
 
     def reform(self):
         random.seed(round(time() * 1000))
@@ -368,7 +372,6 @@ class NsgaIII:
 
     # Starts and executes algorithm
     def run(self, maxRepeat=9999, minFitness=0.999):
-        mutationSize, mutationProbability = self._mutationSize, self._mutationProbability
         population = self.initialize()
         random.seed(round(time() * 1000))
         np.random.seed(int(time()))
@@ -404,8 +407,7 @@ class NsgaIII:
             offspring = self.crossing(pop[cur])
 
             # mutation
-            for child in offspring:
-                child.mutation(mutationSize, mutationProbability)
+            [i for i in map(self.mutation, offspring)]
 
             pop[cur].extend(offspring)
 
